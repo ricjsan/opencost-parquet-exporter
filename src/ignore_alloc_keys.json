@@ -1,3 +1,4 @@
-{
-    "keys": ["pvs", "lbAllocations"]
-}
+[
+    "pvs",
+    "lbAllocations"
+]
