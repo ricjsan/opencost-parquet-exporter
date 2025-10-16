@@ -1,5 +1,5 @@
 -r requirements.txt
 # The dependencies bellow are only used for development.
-freezegun==1.4.0
-pylint==3.0.3
-pytest==7.4.4
+freezegun==1.5.5
+pylint==4.0.1
+pytest==8.4.2
