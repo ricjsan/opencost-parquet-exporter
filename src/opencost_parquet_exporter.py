@@ -27,7 +27,7 @@ def load_config_file(file_path: str):
         config = json.load(file)
     return config
 
-# pylint: disable=R0912,R0913,R0914,R0915
+# pylint: disable=R0912,R0913,R0914,R0915,R0917
 
 
 def get_config(
