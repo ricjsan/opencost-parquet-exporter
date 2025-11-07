@@ -56,20 +56,9 @@ class AzureStorage(BaseStorage):
         # TODO: Force overwrite? As of now upload would fail since key is the same.
         # blob_client provides an option for this
         file_name = 'k8s_opencost.parquet'
-        window = pd.to_datetime(config['window_start'])
-       
-        template = os.environ.get(
-            'OPENCOST_PARQUET_PARTITIONING',
-            "/year={year}/month={month}/day={day}"
-        )
 
-        parquet_partitioning = template.format(
-            year=window.year,
-            month=window.month,
-            day=window.day
-        )
         # pylint: disable=C0301
-        parquet_prefix = f"{config['file_key_prefix']}{parquet_partitioning}"
+        parquet_prefix = f"{config['file_key_prefix']}{config['parquet_partitioning']}"
 
         key = f"{parquet_prefix}/{file_name}"
         blob_client = blob_service_client.get_blob_client(

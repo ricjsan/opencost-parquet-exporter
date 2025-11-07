@@ -59,19 +59,8 @@ class GCPStorage(BaseStorage):
         client = self._get_client(config)
 
         file_name = 'k8s_opencost.parquet'
-        window = pd.to_datetime(config['window_start'])
 
-        template = os.environ.get(
-            'OPENCOST_PARQUET_PARTITIONING',
-            "/year={year}/month={month}/day={day}"
-        )
-
-        parquet_partitioning = template.format(
-            year=window.year,
-            month=window.month,
-            day=window.day
-        )
-        blob_prefix = f"{config['file_key_prefix']}{parquet_partitioning}"
+        blob_prefix = f"{config['file_key_prefix']}{config['parquet_partitioning']}"
 
         bucket_name = config['gcp_bucket_name']
         blob_name = f"{blob_prefix}/{file_name}"

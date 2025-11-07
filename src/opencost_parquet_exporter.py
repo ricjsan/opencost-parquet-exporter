@@ -44,6 +44,7 @@ def get_config(
         storage_backend=None,
         include_idle=None,
         idle_by_node=None,
+        partitioning_template=None
 ):
     """
     Get configuration for the parquet exporter based on either provided
@@ -88,6 +89,10 @@ def get_config(
     - idle_by_node (str): If true, idle allocations are created on a per node basis,
                           defaults to the 'OPENCOST_PARQUET_IDLE_BY_NODE' environment 
                           variable, or 'false' if not set.
+    - partitioning_template (str): Defines how OpenCost exports are partitioned in the destination.
+                                   If not defined the export will be saved inside this prefix in the following structure:
+                                   year=window_start.year/month=window_start.month/day=window_start.day,
+                                   e.g., tmp/year=2024/month=1/day=15
 
     Returns:
     - dict: Configuration dictionary with keys for 'url', 'params', 's3_bucket',
@@ -111,7 +116,7 @@ def get_config(
     if file_key_prefix is None:
         # TODO: Discuss: Format guideline?
         file_key_prefix = os.environ.get(
-            'OPENCOST_PARQUET_FILE_KEY_PREFIX', '/tmp/')
+            'OPENCOST_PARQUET_FILE_KEY_PREFIX', 'tmp')
     if aggregate_by is None:
         aggregate_by = os.environ.get(
             'OPENCOST_PARQUET_AGGREGATE', 'namespace,pod,container')
@@ -128,7 +133,13 @@ def get_config(
     if storage_backend is None:
         storage_backend = os.environ.get(
             'OPENCOST_PARQUET_STORAGE_BACKEND', 'aws')  # For backward compatibility
-
+    if partitioning_template is None:
+        if storage_backend == 'aws':
+            partitioning_template = os.environ.get(
+                'OPENCOST_PARQUET_PARTITIONING', '/year={year}/month={month}/day={day}')
+        else:
+            partitioning_template = os.environ.get(
+                'OPENCOST_PARQUET_PARTITIONING', '/{year}/{month}/{day}')
     if s3_bucket is not None:
         config['s3_bucket'] = s3_bucket
     config['storage_backend'] = storage_backend
@@ -145,6 +156,7 @@ def get_config(
             'azure_application_id': os.environ.get('OPENCOST_PARQUET_AZURE_APPLICATION_ID'),
             'azure_application_secret': os.environ.get('OPENCOST_PARQUET_AZURE_APPLICATION_SECRET'),
         })
+    # GCP-specific configuration
     if config['storage_backend'] == 'gcp':
         config.update({
             # pylint: disable=C0301
@@ -167,6 +179,16 @@ def get_config(
         ("includeProportionalAssetResourceCosts", "false"),
         ("format", "json")
     ]
+
+    # handle the parquet partitioning template
+    window = pd.to_datetime(window_start)
+    parquet_partitioning = partitioning_template.format(
+        year=window.year,
+        month=window.month,
+        day=window.day
+    )
+
+    config['parquet_partitioning'] = parquet_partitioning
 
     # Conditionally append query parameters
     if step is not None:

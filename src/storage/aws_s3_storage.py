@@ -33,20 +33,9 @@ class S3Storage(BaseStorage):
 
         """
         file_name = 'k8s_opencost.parquet'
-        window = pd.to_datetime(config['window_start'])
-        
-        template = os.environ.get(
-            'OPENCOST_PARQUET_PARTITIONING',
-            "/year={year}/month={month}/day={day}"
-        )
 
-        parquet_partitioning = template.format(
-            year=window.year,
-            month=window.month,
-            day=window.day
-        )
         # pylint: disable=C0301
-        parquet_prefix = f"{config['file_key_prefix']}{parquet_partitioning}"
+        parquet_prefix = f"{config['file_key_prefix']}{config['parquet_partitioning']}"
 
         try:
             if config['s3_bucket']:
