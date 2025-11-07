@@ -2,7 +2,6 @@
 This module provides an implementation of the BaseStorage class for Amazon S3.
 """
 
-import os
 import pandas as pd
 from botocore.exceptions import ClientError, PartialCredentialsError, NoCredentialsError
 from .base_storage import BaseStorage

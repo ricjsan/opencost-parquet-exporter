@@ -3,7 +3,6 @@ This module provides an implementation of the BaseStorage class for Google Cloud
 """
 
 from io import BytesIO
-import os
 import logging
 from google.cloud import storage
 from google.oauth2 import service_account
