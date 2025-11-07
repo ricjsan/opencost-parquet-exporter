@@ -6,7 +6,6 @@ with authentication via client secret credentials.
 """
 
 from io import BytesIO
-import os
 import logging
 import sys
 import pandas as pd

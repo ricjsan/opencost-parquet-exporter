@@ -2,8 +2,8 @@
 import unittest
 from unittest.mock import patch, MagicMock, mock_open
 import json
-import pandas as pd
 import os
+import pandas as pd
 import requests
 from freezegun import freeze_time
 from opencost_parquet_exporter import get_config, request_data, load_config_file
@@ -33,9 +33,11 @@ class TestGetConfig(unittest.TestCase):
                              '2020-01-01T00:00:00Z,2020-01-01T23:59:59Z')
             self.assertEqual(config['s3_bucket'], 's3://test-bucket')
             window = pd.to_datetime(config['window_start'])
-            self.assertEqual(config['parquet_partitioning'], f"/{window.year}-{window.month}-{window.day}")
+            self.assertEqual(config['parquet_partitioning'],
+                             f"/{window.year}-{window.month}-{window.day}")
             parquet_prefix = f"{config['file_key_prefix']}{config['parquet_partitioning']}"
-            self.assertEqual(parquet_prefix, f"test-prefix/{window.year}-{window.month}-{window.day}")
+            self.assertEqual(parquet_prefix,
+                             f"test-prefix/{window.year}-{window.month}-{window.day}")
             self.assertEqual(config['storage_backend'], 'aws')
             self.assertEqual(config['params'][1][1], 'false')
             self.assertEqual(config['params'][2][1], 'false')

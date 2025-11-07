@@ -27,7 +27,7 @@ def load_config_file(file_path: str):
         config = json.load(file)
     return config
 
-# pylint: disable=R0912,R0913,R0914,R0915,R0917
+# pylint: disable=R0912,R0913,R0914,R0915,R0917,C0301
 
 
 def get_config(
@@ -90,7 +90,8 @@ def get_config(
                           defaults to the 'OPENCOST_PARQUET_IDLE_BY_NODE' environment 
                           variable, or 'false' if not set.
     - partitioning_template (str): Defines how OpenCost exports are partitioned in the destination.
-                                   If not defined the export will be saved inside this prefix in the following structure:
+                                   If not defined the export will be saved inside this prefix in the
+                                   following structure:
                                    year=window_start.year/month=window_start.month/day=window_start.day,
                                    e.g., tmp/year=2024/month=1/day=15
 
