@@ -6,6 +6,7 @@ with authentication via client secret credentials.
 """
 
 from io import BytesIO
+import os
 import logging
 import sys
 import pandas as pd
@@ -56,7 +57,20 @@ class AzureStorage(BaseStorage):
         # blob_client provides an option for this
         file_name = 'k8s_opencost.parquet'
         window = pd.to_datetime(config['window_start'])
-        parquet_prefix = f"{config['file_key_prefix']}{window.year}/{window.month}/{window.day}"
+       
+        template = os.environ.get(
+            'OPENCOST_PARQUET_PARTITIONING',
+            "/year={year}/month={month}/day={day}"
+        )
+
+        parquet_partitioning = template.format(
+            year=window.year,
+            month=window.month,
+            day=window.day
+        )
+        # pylint: disable=C0301
+        parquet_prefix = f"{config['file_key_prefix']}{parquet_partitioning}"
+
         key = f"{parquet_prefix}/{file_name}"
         blob_client = blob_service_client.get_blob_client(
             container=config['azure_container_name'], blob=key)

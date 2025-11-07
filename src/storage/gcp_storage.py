@@ -3,6 +3,7 @@ This module provides an implementation of the BaseStorage class for Google Cloud
 """
 
 from io import BytesIO
+import os
 import logging
 from google.cloud import storage
 from google.oauth2 import service_account
@@ -59,7 +60,19 @@ class GCPStorage(BaseStorage):
 
         file_name = 'k8s_opencost.parquet'
         window = pd.to_datetime(config['window_start'])
-        blob_prefix = f"{config['file_key_prefix']}/{window.year}/{window.month}/{window.day}"
+
+        template = os.environ.get(
+            'OPENCOST_PARQUET_PARTITIONING',
+            "/year={year}/month={month}/day={day}"
+        )
+
+        parquet_partitioning = template.format(
+            year=window.year,
+            month=window.month,
+            day=window.day
+        )
+        blob_prefix = f"{config['file_key_prefix']}{parquet_partitioning}"
+
         bucket_name = config['gcp_bucket_name']
         blob_name = f"{blob_prefix}/{file_name}"
 
