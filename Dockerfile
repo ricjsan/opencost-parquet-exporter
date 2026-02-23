@@ -1,4 +1,4 @@
-FROM python:3.13-alpine3.22 AS builder
+FROM python:3.14-alpine3.23 AS builder
 
 RUN mkdir -p /app/ && python -m venv /app/.venv
 
@@ -6,7 +6,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN source .venv/bin/activate && pip install -r requirements.txt
 
-FROM python:3.13-alpine3.22 AS runtime-image
+FROM python:3.14-alpine3.23 AS runtime-image
 ENV PYTHONUNBUFFERED=1
 RUN apk --purge del apk-tools
 RUN adduser -D -s /bin/sh -u 8000 opencost
